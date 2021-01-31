@@ -1,0 +1,31 @@
+<service>
+	<id>discordrustserverstatus.exe</id>
+	<name>discord-rustserverstatus</name>
+	<description>Updates activity status on discord bot and displays how many players are connect to your rust server from rest api</description>
+	<executable>C:\Program Files\nodejs\node.exe</executable>
+	<argument>--harmony</argument>
+	<argument>C:\Users\Dylan\AppData\Roaming\npm\node_modules\node-windows\lib\wrapper.js</argument>
+	<argument>--file</argument>
+	<argument>C:\Users\Dylan\Desktop\discord-rustserverstatus-master - Copy\discord-rustserverstatus-master\app.js</argument>
+	<argument>--scriptoptions=</argument>
+	<argument>--log</argument>
+	<argument>discord-rustserverstatus wrapper</argument>
+	<argument>--grow</argument>
+	<argument>0.25</argument>
+	<argument>--wait</argument>
+	<argument>1</argument>
+	<argument>--maxrestarts</argument>
+	<argument>3</argument>
+	<argument>--abortonerror</argument>
+	<argument>n</argument>
+	<argument>--stopparentfirst</argument>
+	<argument>undefined</argument>
+	<logmode>rotate</logmode>
+	<stoptimeout>30sec</stoptimeout>
+	<serviceaccount>
+		<domain>URNANGEYXD</domain>
+		<user>LocalSystem</user>
+		<password></password>
+	</serviceaccount>
+	<workingdirectory>C:\Users\Dylan\Desktop\discord-rustserverstatus-master - Copy\discord-rustserverstatus-master</workingdirectory>
+</service>

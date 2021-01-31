@@ -1,0 +1,21 @@
+version: '2'
+services:
+  bot:
+    build: .
+    image: kenrisa/discord-rustserverstatus
+    container_name: discord-rustserverstatus
+    restart: unless-stopped
+    environment:
+      - token=your_BOT_token
+      - apiSite=4
+      - apiUrl=https://full_uri_here
+      - enableRcon=0
+      - serverIp=
+      - serverPort=28015
+      - rconhost=yourip
+      - rconport=28016
+      - rconpass=yourpassword
+      - prefix=!
+      - "roles=Administrator, admins"
+      - "queueMessage=currently waiting in queue"
+      - updateInterval=3
