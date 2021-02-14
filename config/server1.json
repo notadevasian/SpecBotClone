@@ -1,8 +1,10 @@
 {
   "debug" : false,
+
   "token"  : "",
+  
   "apiSite" : 3,
-  "apiUrl" : "https://api.battlemetrics.com/servers/6324892",
+  "apiUrl" : "https://api.battlemetrics.com/servers/SERVERID",
   "serverIp": "",
   "serverPort": "28015",
   "enableRcon" : "0",
