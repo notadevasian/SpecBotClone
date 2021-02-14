@@ -1,6 +1,6 @@
 {
   "debug" : false,
-  "token"  : "ODA1MDg1MDI0ODMxNTM3MTUz.YBVv2w.TqGzCXJo8MdSnmVXupid3o2sLRk",
+  "token"  : "",
   "apiSite" : 3,
   "apiUrl" : "https://api.battlemetrics.com/servers/9479569",
   "serverIp": "",

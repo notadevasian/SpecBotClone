@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const bot = new Discord.Client();
-const token = 'YOURTOKEN'
+const token = ''
 const prefix = '/';
 const rcon = require ("./rcon/app.js")
 const SourceQuery = require('sourcequery')
@@ -8,12 +8,14 @@ const fs = require('fs');
 const request = require('request')
 const configdir = './config';
 const maxServers = 10;
+const botconfig = require("./botconfig.json");
+
 
 
 bot.on('ready', () => {
 
     console.log('Your bot is now online.')
-    bot.user.setActivity('', {type: "WATCHING"})
+    bot.user.setActivity('Launches Feb 4th', {type: "WATCHING"})
         .then(presence => console.log(`Activity Set To${presence.activities[0].name}`))
         .catch(console.error);
 
@@ -40,6 +42,213 @@ bot.on ("guildMemberAdd", member => {
     })
 
 })
+
+
+bot.commands = new Discord.Collection();
+bot.aliases = new Discord.Collection();
+
+
+fs.readdir("./commands/", (err, files) => {
+
+  if(err) console.log(err);
+  let jsfile = files.filter(f => f.split(".").pop() === "js");
+  if(jsfile.length <= 0){
+    console.log("Couldn't find commands.");
+    return;
+  }
+  
+
+  jsfile.forEach((f, i) =>{
+    let props = require(`./commands/${f}`);
+    console.log(`${f} loaded!`);
+    bot.commands.set(props.help.name, props);
+    props.help.aliases.forEach(alias => { 
+      bot.aliases.set(alias, props.help.name);
+  
+  });
+});
+})
+
+bot.commands = new Discord.Collection();
+bot.aliases = new Discord.Collection();
+
+
+fs.readdir("./commands/", (err, files) => {
+
+  if(err) console.log(err);
+  let jsfile = files.filter(f => f.split(".").pop() === "js");
+  if(jsfile.length <= 0){
+    console.log("Couldn't find commands.");
+    return;
+  }
+  
+
+  jsfile.forEach((f, i) =>{
+    let props = require(`./commands/${f}`);
+    console.log(`${f} loaded!`);
+    bot.commands.set(props.help.name, props);
+    props.help.aliases.forEach(alias => { 
+      bot.aliases.set(alias, props.help.name);
+  
+  });
+});
+})
+bot.on("ready", async () => {
+  console.log(`${bot.user.username} is online on ${bot.guilds.size} servers!`);
+  bot.user.setActivity(`In Development`);
+  bot.user.setStatus('online');
+
+  bot.on("message", async message => {
+    if(message.author.bot) return;
+    if(message.channel.type === "dm") return;
+    let prefix = botconfig.prefix
+    let messageArray = message.content.split(" ");
+    let args = message.content.slice(prefix.length).trim().split(/ +/g);
+    let cmd = args.shift().toLowerCase();
+    let commandfile;
+
+    if (bot.commands.has(cmd)) {
+      commandfile = bot.commands.get(cmd);
+  } else if (bot.aliases.has(cmd)) {
+    commandfile = bot.commands.get(bot.aliases.get(cmd));
+  }
+  
+      if (!message.content.startsWith(prefix)) return;
+
+          
+  try {
+    commandfile.run(bot, message, args);
+  
+  } catch (e) {
+  }}
+  )})
+
+
+
+
+//Welcome & goodbye messages\\
+const client = new Discord.Client();
+
+client.on('guildMemberAdd', member => {
+    member.roles.add(member.guild.roles.cache.find(i => i.name === 'member'))
+
+    const welcomeEmbed = new Discord.MessageEmbed()
+
+    welcomeEmbed.setColor('#FF00FF')
+    welcomeEmbed.setTitle('**' + member.user.username + '** Welcome to Spectality Servers! **' + member.guild.memberCount + '** people')
+    welcomeEmbed.setImage('https://cdn.mos.cms.futurecdn.net/93GAa4wm3z4HbenzLbxWeQ-650-80.jpg.webp')
+
+    member.guild.channels.cache.find(i => i.name === 'greetings').send(welcomeEmbed)
+})
+
+client.on('guildMemberRemove', member => {
+    const goodbyeEmbed = new Discord.MessageEmbed()
+
+    goodbyeEmbed.setColor('#FF00FF')
+    goodbyeEmbed.setTitle('**' + member.user.username + '** has left **' + member.guild.memberCount + '** left in our community')
+    goodbyeEmbed.setImage('https://gamewith-en.akamaized.net/article/thumbnail/rectangle/22183.png')
+
+    member.guild.channels.cache.find(i => i.name === 'greetings').send(goodbyeEmbed)
+})
+//Welcome & goodbye messages end\\
+
+
+
+
+
+var unirest = require('unirest');    // npm install unirest
+var logger = require('winston');     // npm install winston
+
+var auth = require('./auth.json');   // touch auth.json -> vim auth.json
+
+
+// Configure logger settings
+logger.remove(logger.transports.Console);
+logger.add(new logger.transports.Console, {
+    colorize: true
+});
+logger.level = 'debug';
+
+// Initialize Discord Bot
+
+bot.once('ready', function (evt) {
+    logger.info('Connected!');
+});
+
+
+bot.on('message', message => {
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+    const args = message.content.slice(prefix.length).split(' ');
+    const command = args.shift().toLowerCase();
+
+    switch(command) {
+        case 'help':
+            message.channel.send("**Help Menu**:\n" +
+                                    "\tPrefix: " + prefix + "\n" +
+                                    "\tHelp Menu: " + prefix + "help\n" +
+                                    "\tChange prefix: " + prefix + "prefix (newPrefix)\n" +
+                                    "\tList: " + prefix + "list (query) \n" +
+                                    "\tServer Information: " + prefix + "server (serverID)");
+            break;
+        case 'prefix':
+            prefix = args[0];
+            message.channel.send("Prefix successfully changed to: " + prefix);
+            break;
+        case 'list':
+            var query = args[0];
+            console.log("https://api.battlemetrics.com/servers?filter[search]=\"" + query + "\"");
+            unirest.get("https://api.battlemetrics.com/servers?filter[search]=\"" + query + "\"")
+                .end(function (result) {
+                    var json = JSON.parse(JSON.stringify(result.body));
+                    if(result.status != 200) {
+                        message.reply("An error occurred while trying to make the API request!");
+                    } else {
+                        console.log(json);
+                        var i = 1;
+                        message.channel.send("**Server List for "  + query + "**:");
+                        json.data.map(data => {
+                            message.channel.send( "**Server #"  + i + "**:" + "\n" +
+                                               "\tServer Name: " + data.attributes.name + "\n" +
+                                                    "\tServer ID: " + data.id + "\n" +
+                                                    "\tGame: " + data.relationships.game.data.id + "\n" +
+                                                    "\tServer IP: " + data.attributes.ip + "\n" +
+                                                    "\tPlayers: " + data.attributes.players + "\n" +
+                                                    "\tMax Players: " + data.attributes.maxPlayers + "\n" +
+                                                    "\tServer Rank: " + data.attributes.rank);
+                            i = i + 1;
+                        })
+                    }
+                });
+            break;
+        case 'server':
+            var server_id = args[0];
+            unirest.get("https://api.battlemetrics.com/servers/".concat(server_id))
+                .end(function (result) {
+                    //console.log(result.status, result.headers, result.body);
+                    var json = JSON.parse(JSON.stringify(result.body));
+                    if(result.status != 200) {
+                        message.reply("An error occurred while trying to make the API request!");
+                    } else {
+                        message.channel.send("**Server Information**:\n" +
+                                                "\tGame: " + json.data.relationships.game.data.id + "\n" +
+                                                "\tServer id: " + json.data.id + "\n" +
+                                                "\tServer name: " + json.data.attributes.name + "\n" +
+                                                "\tServer IP: " + json.data.attributes.ip + "\n" +
+                                                "\tOfficial: " + json.data.attributes.details.official + "\n" +
+                                                "\tMap: " + json.data.attributes.details.map + "\n" +
+                                                "\tPlayers: " + json.data.attributes.players + "\n" +
+                                                "\tMax Players: " + json.data.attributes.maxPlayers + "\n" +
+                                                "\tServer Rank: " + json.data.attributes.rank + "\n" +
+                                                "\tPVE Enabled: " + json.data.attributes.details.pve + "\n" +
+                                                "\tStatus: " + json.data.attributes.status + "\n");
+                    }
+                });
+            break;
+        default:
+    }
+});
+
 
 bot.on ("guildMemberRemove", member => {
     const leaveChannel = member.guild.channels.find(ch => ch.name.includes('goodbye'))
